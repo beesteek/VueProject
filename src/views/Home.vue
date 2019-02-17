@@ -69,7 +69,6 @@
 
 <script>
     // @ is an alias to /src
-    import HelloWorld from '@/components/HelloWorld.vue';
     import axios from 'axios';
     import {chunk,debounce} from 'lodash';
 
@@ -77,7 +76,6 @@
         name: 'home',
         data() {
             return {
-                message: 'sosid huiii',
                 response: false,
                 page: 0,
                 iconFilterAuthor: false,
@@ -141,10 +139,7 @@
                 .then((resp) => this.response = chunk(resp.data.hits,10))
                 .catch((err) => console.warn('some shit happens'));
             },
-        },
-        components: {
-            HelloWorld,
-        },
+        }
     };
 </script>
 <style lang="scss">
