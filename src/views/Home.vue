@@ -1,6 +1,6 @@
 <template>
     <div class="home">
-        <el-row>
+        <el-row class="row">
             <el-col :span="6">
                 <div class="filter grid-content bg-purple" v-on:click="sortByTitle()">
                     Title
@@ -8,21 +8,21 @@
                     <i class="el-icon-arrow-up" v-if="iconFilterTitle"></i>
                 </div>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="10">
                 <div class="filter grid-content bg-purple-light" v-on:click="sortByUrl()">
                     URL
                     <i class="el-icon-arrow-down" v-if="!iconFilterUrl"></i>
                     <i class="el-icon-arrow-up" v-if="iconFilterUrl"></i>
                 </div>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="4">
                 <div class="filter grid-content bg-purple" v-on:click="sortByCreatedDate()">
                     Created
                     <i class="el-icon-arrow-down" v-if="!iconFilterCreated"></i>
                     <i class="el-icon-arrow-up" v-if="iconFilterCreated"></i>
                 </div>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="4">
                 <div class="filter grid-content bg-purple-light" v-on:click="sortByNames()">
                     Author
                     <i class="el-icon-arrow-down" v-if="!iconFilterAuthor"></i>
@@ -30,29 +30,36 @@
                 </div>
             </el-col>
         </el-row>
-        <el-row v-for="(item, i) in response[page]" :key="i">
-            <el-col :span="6">
-                <div class="grid-content bg-purple">
-                    <span>{{item.title}}</span>
+        <el-row v-for="(item, i) in response[page]" :key="i" class="row" >
+            <div v-on:click="showModal(item)" class="modal-items">
+                <el-col :span="6">
+                <div class="grid-content bg-purple" >
+                    {{item.title}}
                 </div>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="10">
                 <div class="grid-content bg-purple-light">
-                    <span>{{item.url}}</span>
+                    {{item.url}}
                 </div>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="4">
                 <div class="grid-content bg-purple">
-                    <span>{{item.created_at}}</span>
+                    {{item.created_at}}
                 </div>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="4">
                 <div class="grid-content bg-purple-light">
-                    <span>{{item.author}}</span>
+                    {{item.author}}
                 </div>
             </el-col>
-             
+            </div>
         </el-row>
+        <div class="modal" v-if="isShowed">
+            <p class="modal_text">{{this.modal}}</p>
+            <div class="modal_icon">
+                <i class="el-icon-close" v-on:click="closeModal()"></i>
+            </div>
+        </div>
         <div>
             <el-row>
                 <el-button 
@@ -82,6 +89,8 @@
                 iconFilterUrl: false,
                 iconFilterCreated: false,
                 iconFilterTitle: false,
+                modal: null,
+                isShowed: false,
 
                 
             };
@@ -94,7 +103,7 @@
         methods: {
             sortByNames(){
                 this.iconFilterAuthor = !this.iconFilterAuthor;
-                if(this.iconFilter){
+                if(!this.iconFilter){
                     this.response[this.page].sort((a, b) => a.author.localeCompare(b.author))
                 } else {
                     this.response[this.page].sort((a, b) => b.author.localeCompare(a.author))
@@ -103,7 +112,7 @@
             },
             sortByUrl(){
                 this.iconFilterUrl = !this.iconFilterUrl;
-                if(this.iconFilter){
+                if(!this.iconFilter){
                     this.response[this.page].sort((a, b) => a.url.localeCompare(b.url))
                 } else {
                     this.response[this.page].sort((a, b) => b.url.localeCompare(a.url))
@@ -111,7 +120,7 @@
             },
             sortByCreatedDate(){
                 this.iconFilterCreated = !this.iconFilterCreated;
-                if(this.iconFilter){
+                if(!this.iconFilter){
                     this.response[this.page].sort((a, b) => a.created_at.localeCompare(b.created_at))
                 } else {
                     this.response[this.page].sort((a, b) => b.created_at.localeCompare(a.created_at))
@@ -119,7 +128,7 @@
             },
             sortByTitle(){
                 this.iconFilterTitle = !this.iconFilterTitle;
-                if(this.iconFilter){
+                if(!this.iconFilter){
                     this.response[this.page].sort((a, b) => a.title.localeCompare(b.title))
                 } else {
                     this.response[this.page].sort((a, b) => b.title.localeCompare(a.title))
@@ -139,17 +148,54 @@
                 .then((resp) => this.response = chunk(resp.data.hits,10))
                 .catch((err) => console.warn('some shit happens'));
             },
+            showModal(item) {
+                this.modal = item;
+                this.isShowed = true;
+            },
+            closeModal() {
+                this.isShowed = false;
+                this.modal = null;
+            }
         }
     };
 </script>
 <style lang="scss">
+ .modal-items {
+     cursor: pointer;
+ }
+
+ .row {
+     text-align-last: left;
+ }
  .modal {
      position: fixed;
+     width: 80%;
+     height: 30%;
+     margin: 0 auto;
+     background-color: black;
      top: 50%;
      left: 50%;
      transform: translate(-50%,-50%);
-     background-color: #fff;
+     display: flex;
+     justify-content: space-between;
+     border-radius: 6px;
+ }
+ 
+ .modal_text {
+     width: 85%;
+     padding: 15px;
+     color: #fff;
+     height: 100%;
+ }
+ 
+ .grid-content {
+     overflow: hidden;
+ }
 
+ .modal_icon {
+     cursor: pointer;
+     color: #ffffff;
+     font-size: 30px;
  }
  .filter {
      cursor: pointer;
